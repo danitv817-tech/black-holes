@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Black Holes</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:#000;
+  color:#f0ece4;
+  font-family:Georgia,serif;
+  overflow-x:hidden;
+}
+
+/* NAV */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 48px;
+  background:rgba(0,0,0,0.85);
+  border-bottom:1px solid rgba(232,114,12,0.2);
+}
+.logo{font-family:'Arial Black',sans-serif;font-size:20px;letter-spacing:4px;color:#e8720c;}
+.nav-links{display:flex;gap:32px;list-style:none;}
+.nav-links a{font-family:'Courier New',monospace;font-size:11px;letter-spacing:2px;color:rgba(240,236,228,0.5);text-decoration:none;text-transform:uppercase;}
+.nav-links a:hover{color:#e8720c;}
+
+/* HERO */
+#hero{
+  position:relative;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;overflow:hidden;
+  background:#000;
+}
+#hero-canvas{position:absolute;inset:0;width:100%;height:100%;}
+.hero-inner{position:relative;z-index:2;padding:20px;}
+.hero-eyebrow{
+  font-family:'Courier New',monospace;font-size:11px;
+  letter-spacing:6px;color:#e8720c;text-transform:uppercase;
+  margin-bottom:20px;
+}
+.hero-title{
+  font-family:'Arial Black','Impact',sans-serif;
+  font-size:clamp(70px,13vw,160px);
+  line-height:0.9;letter-spacing:3px;
+  color:#f0ece4;
+  text-shadow:0 0 60px rgba(232,114,12,0.4);
+}
+.hero-title span{color:#e8720c;}
+.hero-sub{
+  font-style:italic;font-size:clamp(15px,2vw,20px);
+  color:rgba(240,236,228,0.5);margin-top:24px;
+  max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7;
+}
+.scroll-hint{
+  position:absolute;bottom:36px;left:50%;transform:translateX(-50%);
+  font-family:'Courier New',monospace;font-size:10px;letter-spacing:3px;
+  color:rgba(240,236,228,0.3);display:flex;flex-direction:column;align-items:center;gap:8px;
+}
+.scroll-line{width:1px;height:44px;background:linear-gradient(#e8720c,transparent);}
+
+/* SECTIONS */
+.sec{padding:100px 60px;max-width:1100px;margin:0 auto;}
+.sec-full{padding:100px 0;background:#080808;}
+.sec-full-inner{max-width:1100px;margin:0 auto;padding:0 60px;}
+.label{font-family:'Courier New',monospace;font-size:10px;letter-spacing:4px;color:#e8720c;text-transform:uppercase;margin-bottom:14px;}
+.big-title{font-family:'Arial Black',sans-serif;font-size:clamp(48px,7vw,90px);line-height:0.92;letter-spacing:2px;margin-bottom:40px;}
+.divider{width:100%;height:1px;background:rgba(240,236,228,0.08);margin:0;}
+
+/* INTRO */
+.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.intro-text p{font-size:17px;line-height:1.85;color:rgba(240,236,228,0.6);margin-bottom:18px;}
+.intro-canvas-wrap{display:flex;align-items:center;justify-content:center;}
+#intro-canvas{border-radius:50%;display:block;}
+
+/* STATS */
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);}
+.stat{padding:40px;border-right:1px solid rgba(240,236,228,0.08);text-align:center;}
+.stat:last-child{border-right:none;}
+.stat-n{font-family:'Arial Black',sans-serif;font-size:48px;color:#e8720c;line-height:1;}
+.stat-l{font-family:'Courier New',monospace;font-size:11px;letter-spacing:2px;color:rgba(240,236,228,0.4);margin-top:8px;text-transform:uppercase;}
+
+/* ANATOMY */
+.anatomy-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;}
+.anatomy-list{display:grid;gap:16px;}
+.anat-item{padding:18px 22px;border-left:2px solid rgba(240,236,228,0.1);transition:border-color .3s,background .3s;}
+.anat-item:hover{border-color:#e8720c;background:rgba(232,114,12,0.05);}
+.anat-name{font-family:'Arial Black',sans-serif;font-size:18px;letter-spacing:2px;color:#e8720c;margin-bottom:5px;}
+.anat-desc{font-family:'Courier New',monospace;font-size:12px;line-height:1.65;color:rgba(240,236,228,0.5);}
+#anatomy-canvas{display:block;margin:0 auto;}
+
+/* TYPES */
+.types-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:50px;}
+.type-card{padding:44px 32px;border:1px solid rgba(240,236,228,0.08);transition:background .3s,border-color .3s;}
+.type-card:hover{background:rgba(232,114,12,0.04);border-color:rgba(232,114,12,0.3);}
+.t-num{font-family:'Courier New',monospace;font-size:10px;letter-spacing:3px;color:rgba(240,236,228,0.2);margin-bottom:20px;}
+.t-name{font-family:'Arial Black',sans-serif;font-size:30px;letter-spacing:2px;margin-bottom:10px;}
+.t-mass{font-family:'Courier New',monospace;font-size:11px;color:#e8720c;letter-spacing:2px;margin-bottom:14px;}
+.t-desc{font-size:14px;line-height:1.7;color:rgba(240,236,228,0.5);}
+
+/* TIMELINE */
+.tl{padding-left:40px;position:relative;margin-top:50px;}
+.tl::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:rgba(240,236,228,0.1);}
+.tl-item{position:relative;padding:0 0 48px 32px;}
+.tl-dot{position:absolute;left:-6px;top:8px;width:13px;height:13px;border-radius:50%;background:#e8720c;box-shadow:0 0 14px rgba(232,114,12,0.6);}
+.tl-year{font-family:'Arial Black',sans-serif;font-size:42px;color:#e8720c;line-height:1;margin-bottom:6px;}
+.tl-t{font-family:'Arial Black',sans-serif;font-size:18px;letter-spacing:1px;margin-bottom:6px;}
+.tl-d{font-family:'Courier New',monospace;font-size:12px;line-height:1.7;color:rgba(240,236,228,0.5);}
+
+/* FACTS */
+.facts-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:50px;}
+.fact{padding:36px;border:1px solid rgba(240,236,228,0.08);position:relative;transition:background .3s;}
+.fact:hover{background:rgba(232,114,12,0.03);}
+.fact-bg-n{position:absolute;top:16px;right:24px;font-family:'Arial Black',sans-serif;font-size:64px;color:rgba(232,114,12,0.08);line-height:1;}
+.fact-txt{font-size:15px;line-height:1.75;color:rgba(240,236,228,0.8);position:relative;}
+.fact-txt strong{color:#e8720c;}
+
+/* GALLERY + VIDEOS */
+.gallery-layout{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;margin-top:50px;}
+.bh-big-wrap{position:relative;background:#000;border-radius:10px;overflow:hidden;}
+#big-bh-canvas{display:block;width:100%;}
+.bh-cap{position:absolute;bottom:0;left:0;right:0;padding:32px 20px 16px;background:linear-gradient(transparent,rgba(0,0,0,0.9));font-family:'Courier New',monospace;font-size:10px;letter-spacing:3px;color:#e8720c;text-transform:uppercase;}
+.bh-cap span{display:block;color:rgba(240,236,228,0.4);font-size:10px;letter-spacing:1px;margin-top:4px;}
+.media-col{display:grid;gap:20px;}
+.media-label{font-family:'Courier New',monospace;font-size:10px;letter-spacing:3px;color:#e8720c;text-transform:uppercase;margin-bottom:10px;}
+.img-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;}
+.img-cell{position:relative;overflow:hidden;background:#050505;aspect-ratio:16/10;cursor:pointer;}
+.img-cell canvas{display:block;width:100%;height:100%;}
+.img-cap{position:absolute;bottom:0;left:0;right:0;padding:16px 10px 7px;background:linear-gradient(transparent,rgba(0,0,0,0.8));font-family:'Courier New',monospace;font-size:10px;letter-spacing:1px;color:rgba(240,236,228,0.6);text-transform:uppercase;}
+.video-list{display:grid;gap:3px;}
+.vid-row{display:flex;align-items:center;gap:14px;padding:12px 14px;border:1px solid rgba(240,236,228,0.08);text-decoration:none;transition:border-color .2s,background .2s;}
+.vid-row:hover{border-color:#e8720c;background:rgba(232,114,12,0.04);}
+.vid-thumb{width:64px;min-width:64px;height:40px;background:#0a0205;border-radius:4px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
+.vid-thumb canvas{position:absolute;inset:0;width:100%;height:100%;}
+.play{position:relative;z-index:2;width:18px;height:18px;border-radius:50%;background:rgba(232,114,12,0.9);display:flex;align-items:center;justify-content:center;}
+.play svg{width:7px;height:7px;fill:#fff;margin-left:1px;}
+.vid-info{flex:1;min-width:0;}
+.vid-title{font-family:'Arial Black',sans-serif;font-size:13px;letter-spacing:1px;color:#f0ece4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.vid-meta{font-family:'Courier New',monospace;font-size:10px;letter-spacing:1px;color:rgba(240,236,228,0.4);margin-top:3px;}
+.vid-arr{font-size:14px;color:rgba(240,236,228,0.2);transition:color .2s,transform .2s;}
+.vid-row:hover .vid-arr{color:#e8720c;transform:translateX(4px);}
+
+/* QUOTE */
+.quote-sec{padding:100px 60px;background:#000;text-align:center;}
+.quote-text{font-style:italic;font-size:clamp(20px,3vw,34px);line-height:1.55;max-width:800px;margin:0 auto;color:#f0ece4;position:relative;}
+.quote-text::before{content:'\201C';font-family:'Arial Black',sans-serif;font-size:120px;color:rgba(232,114,12,0.12);position:absolute;top:-30px;left:-10px;line-height:1;}
+.quote-attr{font-family:'Courier New',monospace;font-size:11px;letter-spacing:3px;color:#e8720c;margin-top:28px;text-transform:uppercase;}
+
+/* FOOTER */
+footer{padding:48px 60px;border-top:1px solid rgba(240,236,228,0.08);display:flex;align-items:center;justify-content:space-between;}
+.f-logo{font-family:'Arial Black',sans-serif;font-size:22px;letter-spacing:4px;color:#e8720c;}
+.f-txt{font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;color:rgba(240,236,228,0.2);}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s,transform .7s;}
+.reveal.on{opacity:1;transform:translateY(0);}
+
+@media(max-width:768px){
+  nav{padding:16px 20px;}
+  .nav-links{display:none;}
+  .sec{padding:70px 24px;}
+  .sec-full-inner{padding:0 24px;}
+  .intro-grid,.anatomy-grid,.gallery-layout{grid-template-columns:1fr;}
+  .stats-bar{grid-template-columns:1fr 1fr;}
+  .types-grid{grid-template-columns:1fr;}
+  .facts-grid{grid-template-columns:1fr;}
+  footer{flex-direction:column;gap:12px;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">BLACK HOLES</div>
+  <ul class="nav-links">
+    <li><a href="#intro">What</a></li>
+    <li><a href="#anatomy">Anatomy</a></li>
+    <li><a href="#types">Types</a></li>
+    <li><a href="#timeline">History</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">A journey into the unknown</div>
+    <h1 class="hero-title">BLACK<br/><span>HOLES</span></h1>
+    <p class="hero-sub">Where gravity crushes everything into nothing — and even light cannot escape.</p>
+  </div>
+  <div class="scroll-hint"><div class="scroll-line"></div>SCROLL</div>
+</section>
+
+<hr class="divider"/>
+
+<!-- WHAT IS IT -->
+<div id="intro">
+<div class="sec">
+  <div class="intro-grid">
+    <div class="intro-text reveal">
+      <div class="label">01 — Definition</div>
+      <h2 class="big-title">GRAVITY<br/>GONE<br/>INFINITE</h2>
+      <p>A black hole is a region of spacetime where gravity is so extreme that nothing — not matter, not energy, not light itself — can escape once it crosses the event horizon.</p>
+      <p>They form when massive stars collapse at the end of their lives, compressing into an infinitely dense <strong style="color:#e8720c">singularity</strong> that warps space and time itself.</p>
+    </div>
+    <div class="intro-canvas-wrap reveal">
+      <canvas id="intro-canvas" width="340" height="340"></canvas>
+    </div>
+  </div>
+</div>
+</div>
+
+<hr class="divider"/>
+
+<!-- STATS -->
+<div class="sec-full">
+  <div class="stats-bar">
+    <div class="stat reveal"><div class="stat-n">4M</div><div class="stat-l">Solar masses — Sgr A*</div></div>
+    <div class="stat reveal"><div class="stat-n">6.5B</div><div class="stat-l">Solar masses — M87*</div></div>
+    <div class="stat reveal"><div class="stat-n">∞</div><div class="stat-l">Density at singularity</div></div>
+    <div class="stat reveal"><div class="stat-n">0</div><div class="stat-l">Escape velocity possible</div></div>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ANATOMY -->
+<div id="anatomy">
+<div class="sec">
+  <div class="label reveal">02 — Structure</div>
+  <h2 class="big-title reveal">ANATOMY<br/>OF THE VOID</h2>
+  <div class="anatomy-grid">
+    <div class="anatomy-list">
+      <div class="anat-item reveal"><div class="anat-name">SINGULARITY</div><div class="anat-desc">The central point of infinite density and zero volume. All the mass is compressed here. Physics as we know it completely breaks down.</div></div>
+      <div class="anat-item reveal"><div class="anat-name">EVENT HORIZON</div><div class="anat-desc">The point of no return. Once anything crosses this boundary, escape is impossible — not even light can climb back out.</div></div>
+      <div class="anat-item reveal"><div class="anat-name">PHOTON SPHERE</div><div class="anat-desc">A zone where gravity is strong enough to force photons (light particles) to travel in circular orbits around the black hole.</div></div>
+      <div class="anat-item reveal"><div class="anat-name">ACCRETION DISK</div><div class="anat-desc">A superheated ring of gas and dust spiraling inward. It glows with intense radiation — this is what we see in real black hole images.</div></div>
+      <div class="anat-item reveal"><div class="anat-name">RELATIVISTIC JETS</div><div class="anat-desc">Twin beams of plasma ejected from the poles at near light speed, stretching for thousands of light-years into space.</div></div>
+    </div>
+    <div class="reveal">
+      <canvas id="anatomy-canvas" width="320" height="320"></canvas>
+    </div>
+  </div>
+</div>
+</div>
+
+<hr class="divider"/>
+
+<!-- TYPES -->
+<div id="types">
+<div class="sec-full">
+<div class="sec-full-inner">
+  <div class="label reveal">03 — Classification</div>
+  <h2 class="big-title reveal">THREE KINDS<br/>OF DARKNESS</h2>
+  <div class="types-grid">
+    <div class="type-card reveal">
+      <div class="t-num">TYPE / 01</div>
+      <div class="t-name">STELLAR</div>
+      <div class="t-mass">3 — 20× Solar Mass</div>
+      <div class="t-desc">The most common type, formed when a massive star exhausts its nuclear fuel and its core collapses in a violent supernova explosion.</div>
+    </div>
+    <div class="type-card reveal">
+      <div class="t-num">TYPE / 02</div>
+      <div class="t-name">INTERMEDIATE</div>
+      <div class="t-mass">100 — 100,000× Solar Mass</div>
+      <div class="t-desc">Rare and elusive, found in dense star clusters. Believed to be the missing link between stellar and supermassive black holes.</div>
+    </div>
+    <div class="type-card reveal">
+      <div class="t-num">TYPE / 03</div>
+      <div class="t-name">SUPERMASSIVE</div>
+      <div class="t-mass">Millions — Billions × Solar Mass</div>
+      <div class="t-desc">Lurking at the center of almost every large galaxy. Our own Milky Way hosts Sagittarius A* — 4 million solar masses.</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
+<hr class="divider"/>
+
+<!-- TIMELINE -->
+<div id="timeline">
+<div class="sec">
+  <div class="label reveal">04 — History</div>
+  <h2 class="big-title reveal">TIMELINE OF<br/>DISCOVERY</h2>
+  <div class="tl">
+    <div class="tl-item reveal"><div class="tl-dot"></div><div class="tl-year">1783</div><div class="tl-t">John Michell — Dark Stars</div><div class="tl-d">First theoretical prediction: a star massive enough would trap even light with its gravity.</div></div>
+    <div class="tl-item reveal"><div class="tl-dot"></div><div class="tl-year">1915</div><div class="tl-t">Einstein's General Relativity</div><div class="tl-d">Einstein publishes equations describing how mass curves spacetime — the mathematical foundation for black holes.</div></div>
+    <div class="tl-item reveal"><div class="tl-dot"></div><div class="tl-year">1967</div><div class="tl-t">John Wheeler Coins the Term</div><div class="tl-d">"Black hole" replaces "gravitationally completely collapsed object" in a Wheeler lecture.</div></div>
+    <div class="tl-item reveal"><div class="tl-dot"></div><div class="tl-year">1974</div><div class="tl-t">Hawking Radiation Theory</div><div class="tl-d">Stephen Hawking theorizes that black holes slowly emit thermal radiation and will eventually evaporate.</div></div>
+    <div class="tl-item reveal"><div class="tl-dot"></div><div class="tl-year">2015</div><div class="tl-t">First Gravitational Waves</div><div class="tl-d">LIGO detects ripples from two merging black holes 1.3 billion light-years away — a new way to observe the universe.</div></div>
+    <div class="tl-item reveal"><div class="tl-dot"></div><div class="tl-year">2019</div><div class="tl-t">First Image of a Black Hole</div><div class="tl-d">The Event Horizon Telescope captures M87* — 6.5 billion solar masses, 55 million light-years away.</div></div>
+    <div class="tl-item reveal"><div class="tl-dot"></div><div class="tl-year">2022</div><div class="tl-t">Sagittarius A* Photographed</div><div class="tl-d">EHT photographs the black hole at the center of our own Milky Way galaxy for the first time.</div></div>
+  </div>
+</div>
+</div>
+
+<hr class="divider"/>
+
+<!-- FACTS -->
+<div id="facts">
+<div class="sec-full">
+<div class="sec-full-inner">
+  <div class="label reveal">05 — Strange Truths</div>
+  <h2 class="big-title reveal">MIND-BENDING<br/>FACTS</h2>
+  <div class="facts-grid">
+    <div class="fact reveal"><div class="fact-bg-n">01</div><div class="fact-txt">If you fell in, you would experience <strong>spaghettification</strong> — tidal forces would stretch your body into a strand of subatomic particles.</div></div>
+    <div class="fact reveal"><div class="fact-bg-n">02</div><div class="fact-txt">To an outside observer, you would <strong>freeze at the event horizon forever</strong> — gravitational time dilation means you never quite fall in.</div></div>
+    <div class="fact reveal"><div class="fact-bg-n">03</div><div class="fact-txt">Black holes are <strong>not cosmic vacuum cleaners</strong>. If the Sun became one, Earth's orbit would not change — only the light would vanish.</div></div>
+    <div class="fact reveal"><div class="fact-bg-n">04</div><div class="fact-txt">A black hole with the Sun's mass would be only <strong>6 km in diameter</strong> — smaller than a city, yet containing a star's worth of mass.</div></div>
+    <div class="fact reveal"><div class="fact-bg-n">05</div><div class="fact-txt"><strong>TON 618</strong>, the largest known black hole, has a mass of 66 billion suns — its event horizon is larger than our entire solar system.</div></div>
+    <div class="fact reveal"><div class="fact-bg-n">06</div><div class="fact-txt">Hawking radiation predicts black holes <strong>slowly evaporate</strong>. A stellar black hole would take 10⁶⁷ years to completely disappear.</div></div>
+  </div>
+</div>
+</div>
+</div>
+
+<hr class="divider"/>
+
+<!-- GALLERY & VIDEOS -->
+<div id="gallery">
+<div class="sec">
+  <div class="label reveal">06 — Visuals & Media</div>
+  <h2 class="big-title reveal">SEE THE<br/>UNSEEABLE</h2>
+  <div class="gallery-layout">
+
+    <!-- BIG ANIMATED BH -->
+    <div class="reveal">
+      <div class="bh-big-wrap">
+        <canvas id="big-bh-canvas" width="500" height="500"></canvas>
+        <div class="bh-cap">Real-time simulation<span>Accretion disk · Event horizon · Relativistic jets</span></div>
+      </div>
+    </div>
+
+    <!-- IMAGES + VIDEOS -->
+    <div class="media-col">
+      <div class="reveal">
+        <div class="media-label">📷 Images</div>
+        <div class="img-grid">
+          <div class="img-cell"><canvas id="ig1" width="300" height="188"></canvas><div class="img-cap">M87* — First Photo 2019</div></div>
+          <div class="img-cell"><canvas id="ig2" width="300" height="188"></canvas><div class="img-cap">Sagittarius A* 2022</div></div>
+          <div class="img-cell"><canvas id="ig3" width="300" height="188"></canvas><div class="img-cap">Gravitational Lensing</div></div>
+          <div class="img-cell"><canvas id="ig4" width="300" height="188"></canvas><div class="img-cap">Interstellar — Gargantua</div></div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="media-label">▶ Videos to Watch</div>
+        <div class="video-list">
+          <a class="vid-row" href="https://www.youtube.com/watch?v=e-P5IFTqB98" target="_blank">
+            <div class="vid-thumb"><canvas id="vt1" width="64" height="40"></canvas><div class="play"><svg viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg></div></div>
+            <div class="vid-info"><div class="vid-title">Black Holes Explained</div><div class="vid-meta">Kurzgesagt · 8 min</div></div>
+            <div class="vid-arr">→</div>
+          </a>
+          <a class="vid-row" href="https://www.youtube.com/watch?v=zUyH3XhpLTo" target="_blank">
+            <div class="vid-thumb"><canvas id="vt2" width="64" height="40"></canvas><div class="play"><svg viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg></div></div>
+            <div class="vid-info"><div class="vid-title">What's Inside a Black Hole?</div><div class="vid-meta">Veritasium · 11 min</div></div>
+            <div class="vid-arr">→</div>
+          </a>
+          <a class="vid-row" href="https://www.youtube.com/watch?v=S4ZYXY2wBaE" target="_blank">
+            <div class="vid-thumb"><canvas id="vt3" width="64" height="40"></canvas><div class="play"><svg viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg></div></div>
+            <div class="vid-info"><div class="vid-title">First Black Hole Image — NASA</div><div class="vid-meta">NASA · 6 min</div></div>
+            <div class="vid-arr">→</div>
+          </a>
+          <a class="vid-row" href="https://www.youtube.com/watch?v=kOEDG3j1bjs" target="_blank">
+            <div class="vid-thumb"><canvas id="vt4" width="64" height="40"></canvas><div class="play"><svg viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg></div></div>
+            <div class="vid-info"><div class="vid-title">Hawking Radiation Explained</div><div class="vid-meta">PBS Space Time · 14 min</div></div>
+            <div class="vid-arr">→</div>
+          </a>
+          <a class="vid-row" href="https://www.youtube.com/watch?v=Wf0ow_aFnxI" target="_blank">
+            <div class="vid-thumb"><canvas id="vt5" width="64" height="40"></canvas><div class="play"><svg viewBox="0 0 10 10"><polygon points="2,1 9,5 2,9"/></svg></div></div>
+            <div class="vid-info"><div class="vid-title">The Science of Interstellar</div><div class="vid-meta">Wired · 9 min</div></div>
+            <div class="vid-arr">→</div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<hr class="divider"/>
+
+<!-- QUOTE -->
+<div class="quote-sec">
+  <div class="quote-text reveal">
+    Black holes ain't as black as they are painted. They are not the eternal prisons they were once thought. Things can get out of a black hole both to the outside and, possibly, to another universe.
+  </div>
+  <div class="quote-attr reveal">— Stephen Hawking, 2016</div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="f-logo">BLACK HOLES</div>
+  <div style="text-align:center;">
+    <div class="f-txt">A journey through the darkest corners of the universe</div>
+    <div style="margin-top:14px;font-family:'Arial Black',sans-serif;font-size:16px;letter-spacing:3px;color:#e8720c;">Project by <span style="color:#f0ece4;">Dani Bunda</span></div>
+  </div>
+  <div class="f-txt">© 2026</div>
+</footer>
+
+<script>
+// ── HELPER: draw BH ring stack ──
+function drawBH(ctx, cx, cy, opts){
+  var rings = opts.rings || [];
+  rings.forEach(function(rg){
+    var gr = ctx.createRadialGradient(cx,cy,rg.r-rg.w/2,cx,cy,rg.r+rg.w/2);
+    gr.addColorStop(0,'transparent');
+    gr.addColorStop(0.4,rg.c);
+    gr.addColorStop(1,'transparent');
+    ctx.beginPath(); ctx.arc(cx,cy,rg.r,0,Math.PI*2);
+    ctx.strokeStyle=gr; ctx.lineWidth=rg.w; ctx.stroke();
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,opts.ehR,0,Math.PI*2);
+  ctx.fillStyle='#000'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx,cy,opts.ehR,0,Math.PI*2);
+  ctx.strokeStyle='rgba(210,70,0,0.6)'; ctx.lineWidth=1.5; ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx,cy,3,0,Math.PI*2);
+  ctx.fillStyle='rgba(255,255,255,0.85)'; ctx.fill();
+}
+
+function starfield(ctx,W,H,n,bright){
+  for(var i=0;i<n;i++){
+    ctx.beginPath();
+    ctx.arc(Math.random()*W,Math.random()*H,Math.random()*1.1,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,'+(0.15+Math.random()*(bright||0.7))+')';
+    ctx.fill();
+  }
+}
+
+// ── HERO CANVAS ──
+(function(){
+  var c = document.getElementById('hero-canvas');
+  var ctx = c.getContext('2d');
+  var W,H,t=0;
+  function resize(){ W=c.width=window.innerWidth; H=c.height=window.innerHeight; }
+  resize(); window.addEventListener('resize',resize);
+  // draw static stars once
+  starfield(ctx,W||1200,H||800,250,0.7);
+  function frame(){
+    // subtle fade
+    ctx.fillStyle='rgba(0,0,0,0.06)'; ctx.fillRect(0,0,W,H);
+    var cx=W/2,cy=H/2;
+    var rs=[
+      {r:210,w:55,c:'rgba(255,50,0,0.04)'},{r:172,w:40,c:'rgba(255,90,0,0.09)'},
+      {r:142,w:28,c:'rgba(255,130,0,0.15)'},{r:118,w:19,c:'rgba(255,170,20,0.22)'},
+      {r:100,w:13,c:'rgba(255,200,50,0.3)'},{r:86,w:8,c:'rgba(255,220,80,0.4)'}
+    ];
+    rs.forEach(function(rg,i){
+      var p=1+0.028*Math.sin(t*0.6+i*0.8);
+      var gr=ctx.createRadialGradient(cx,cy,rg.r*p-rg.w/2,cx,cy,rg.r*p+rg.w/2);
+      gr.addColorStop(0,'transparent'); gr.addColorStop(0.4,rg.c); gr.addColorStop(1,'transparent');
+      ctx.beginPath(); ctx.arc(cx,cy,rg.r*p,0,Math.PI*2);
+      ctx.strokeStyle=gr; ctx.lineWidth=rg.w; ctx.stroke();
+    });
+    ctx.beginPath(); ctx.arc(cx,cy,74,0,Math.PI*2); ctx.fillStyle='#000'; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,74,0,Math.PI*2); ctx.strokeStyle='rgba(200,70,0,0.5)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,3,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.8)'; ctx.fill();
+    t+=0.022; requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+// ── INTRO CANVAS (spinning disk) ──
+(function(){
+  var c=document.getElementById('intro-canvas');
+  var ctx=c.getContext('2d'),W=340,H=340,cx=170,cy=170,t=0;
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+  starfield(ctx,W,H,80,0.6);
+  function frame(){
+    ctx.fillStyle='rgba(0,0,0,0.14)'; ctx.fillRect(0,0,W,H);
+    [
+      {r:130,w:20,a:0.1,tilt:0.18,spd:0.18},
+      {r:110,w:15,a:0.2,tilt:0.22,spd:0.12},
+      {r:92,w:11,a:0.35,tilt:0.28,spd:0.09},
+      {r:76,w:7,a:0.5,tilt:0.35,spd:0.06}
+    ].forEach(function(d,i){
+      ctx.save(); ctx.translate(cx,cy); ctx.rotate(t*d.spd); ctx.scale(1,d.tilt); ctx.translate(-cx,-cy);
+      var gr=ctx.createRadialGradient(cx,cy,d.r-d.w/2,cx,cy,d.r+d.w/2);
+      gr.addColorStop(0,'transparent');
+      gr.addColorStop(0.4,'rgba(255,'+(90+i*30)+',0,'+d.a+')');
+      gr.addColorStop(1,'transparent');
+      ctx.beginPath(); ctx.arc(cx,cy,d.r,0,Math.PI*2);
+      ctx.strokeStyle=gr; ctx.lineWidth=d.w; ctx.stroke(); ctx.restore();
+    });
+    ctx.beginPath(); ctx.arc(cx,cy,56,0,Math.PI*2); ctx.fillStyle='#000'; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,56,0,Math.PI*2); ctx.strokeStyle='rgba(200,70,0,0.45)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,3,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.8)'; ctx.fill();
+    t+=0.016; requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+// ── ANATOMY CANVAS ──
+(function(){
+  var c=document.getElementById('anatomy-canvas');
+  var ctx=c.getContext('2d'),W=320,H=320,cx=160,cy=160,t=0;
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+  starfield(ctx,W,H,60,0.5);
+  function frame(){
+    ctx.fillStyle='rgba(0,0,0,0.12)'; ctx.fillRect(0,0,W,H);
+    // disk rings
+    [{r:120,w:16,c:'rgba(255,80,0,0.18)'},{r:102,w:12,c:'rgba(255,120,0,0.3)'},
+     {r:86,w:9,c:'rgba(255,160,20,0.42)'},{r:73,w:6,c:'rgba(255,200,50,0.5)'}
+    ].forEach(function(rg){
+      var gr=ctx.createRadialGradient(cx,cy,rg.r-rg.w/2,cx,cy,rg.r+rg.w/2);
+      gr.addColorStop(0,'transparent'); gr.addColorStop(0.4,rg.c); gr.addColorStop(1,'transparent');
+      ctx.beginPath(); ctx.arc(cx,cy,rg.r,0,Math.PI*2);
+      ctx.strokeStyle=gr; ctx.lineWidth=rg.w; ctx.stroke();
+    });
+    // jets
+    var ja=0.3+0.2*Math.sin(t);
+    [[cx,cy-62,cx,cy-148],[cx,cy+62,cx,cy+148]].forEach(function(coords){
+      var gr=ctx.createLinearGradient(coords[0],coords[1],coords[2],coords[3]);
+      gr.addColorStop(0,'rgba(130,170,255,'+ja+')'); gr.addColorStop(1,'transparent');
+      ctx.beginPath(); ctx.moveTo(coords[0]-3,coords[1]); ctx.lineTo(coords[2],coords[3]);
+      ctx.moveTo(coords[0]+3,coords[1]); ctx.lineTo(coords[2],coords[3]);
+      ctx.strokeStyle=gr; ctx.lineWidth=2; ctx.stroke();
+    });
+    // photon sphere dashed
+    ctx.save(); ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.arc(cx,cy,78,0,Math.PI*2);
+    ctx.strokeStyle='rgba(255,100,0,0.35)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.restore();
+    drawBH(ctx,cx,cy,{ehR:58,rings:[]});
+    t+=0.02; requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+// ── BIG BH CANVAS ──
+(function(){
+  var c=document.getElementById('big-bh-canvas');
+  var ctx=c.getContext('2d'),W=500,H=500,cx=250,cy=250,t=0;
+  var particles=[];
+  for(var i=0;i<180;i++){
+    particles.push({
+      angle:Math.random()*Math.PI*2,
+      r:170+Math.random()*160,
+      speed:(0.003+Math.random()*0.007)*(Math.random()<0.5?1:-1),
+      decay:0.9985+Math.random()*0.001,
+      size:0.4+Math.random()*1.6,
+      bright:0.35+Math.random()*0.6,
+      orange:Math.random()<0.7
+    });
+  }
+  function resetP(p){ p.angle=Math.random()*Math.PI*2; p.r=170+Math.random()*160; }
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+  starfield(ctx,W,H,120,0.6);
+  function frame(){
+    ctx.fillStyle='rgba(0,0,0,0.16)'; ctx.fillRect(0,0,W,H);
+    // outer glows
+    [{r:195,w:55,c:'rgba(255,50,0,0.05)'},{r:162,w:40,c:'rgba(255,90,0,0.1)'},
+     {r:134,w:28,c:'rgba(255,130,0,0.17)'},{r:112,w:20,c:'rgba(255,170,20,0.25)'},
+     {r:96,w:13,c:'rgba(255,200,50,0.33)'},{r:82,w:8,c:'rgba(255,220,80,0.43)'}
+    ].forEach(function(rg,i){
+      var p=1+0.024*Math.sin(t*0.65+i*0.9);
+      var gr=ctx.createRadialGradient(cx,cy,rg.r*p-rg.w/2,cx,cy,rg.r*p+rg.w/2);
+      gr.addColorStop(0,'transparent'); gr.addColorStop(0.4,rg.c); gr.addColorStop(1,'transparent');
+      ctx.beginPath(); ctx.arc(cx,cy,rg.r*p,0,Math.PI*2);
+      ctx.strokeStyle=gr; ctx.lineWidth=rg.w; ctx.stroke();
+    });
+    // tilted disk ellipses
+    [{ry:0.2,c:'rgba(255,100,0,0.38)',lw:4,r:115,s:0.14},
+     {ry:0.27,c:'rgba(255,155,30,0.48)',lw:3,r:100,s:0.09},
+     {ry:0.34,c:'rgba(255,195,55,0.52)',lw:2,r:88,s:0.06}
+    ].forEach(function(d,i){
+      ctx.save(); ctx.translate(cx,cy); ctx.rotate(t*d.s); ctx.scale(1,d.ry); ctx.translate(-cx,-cy);
+      ctx.beginPath(); ctx.arc(cx,cy,d.r,0,Math.PI*2);
+      ctx.strokeStyle=d.c; ctx.lineWidth=d.lw; ctx.stroke(); ctx.restore();
+    });
+    // particles
+    particles.forEach(function(p){
+      p.angle+=p.speed; p.r*=p.decay;
+      if(p.r<80) resetP(p);
+      var px=cx+p.r*Math.cos(p.angle), py=cy+p.r*Math.sin(p.angle)*0.28;
+      ctx.beginPath(); ctx.arc(px,py,p.size,0,Math.PI*2);
+      ctx.fillStyle=p.orange?'rgba(255,'+(115+Math.random()*85)+',0,'+p.bright+')':'rgba(255,230,200,'+(p.bright*0.5)+')';
+      ctx.fill();
+    });
+    // jets
+    var ja=0.3+0.15*Math.sin(t*1.1), jf=3+2*Math.sin(t*2.1);
+    var jtg=ctx.createLinearGradient(cx,cy-80,cx,cy-230);
+    jtg.addColorStop(0,'rgba(130,175,255,'+ja+')'); jtg.addColorStop(1,'transparent');
+    ctx.beginPath(); ctx.moveTo(cx-jf,cy-80); ctx.bezierCurveTo(cx-jf*3,cy-140,cx+jf*2,cy-190,cx,cy-230);
+    ctx.strokeStyle=jtg; ctx.lineWidth=3; ctx.stroke();
+    var jbg=ctx.createLinearGradient(cx,cy+80,cx,cy+230);
+    jbg.addColorStop(0,'rgba(130,175,255,'+ja+')'); jbg.addColorStop(1,'transparent');
+    ctx.beginPath(); ctx.moveTo(cx+jf,cy+80); ctx.bezierCurveTo(cx+jf*3,cy+140,cx-jf*2,cy+190,cx,cy+230);
+    ctx.strokeStyle=jbg; ctx.lineWidth=3; ctx.stroke();
+    // photon sphere dashed
+    ctx.save(); ctx.setLineDash([3,5]);
+    ctx.beginPath(); ctx.arc(cx,cy,90,0,Math.PI*2);
+    ctx.strokeStyle='rgba(255,100,0,0.22)'; ctx.lineWidth=1; ctx.stroke(); ctx.restore();
+    // EH + singularity
+    ctx.beginPath(); ctx.arc(cx,cy,80,0,Math.PI*2); ctx.fillStyle='#000'; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,80,0,Math.PI*2); ctx.strokeStyle='rgba(215,75,0,0.65)'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx,cy,3.5,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.88)'; ctx.fill();
+    t+=0.018; requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+// ── IMAGE CANVASES ──
+function ig(id,fn){
+  var c=document.getElementById(id); if(!c) return;
+  fn(c.getContext('2d'),300,188);
+}
+ig('ig1',function(ctx,W,H){ // M87*
+  ctx.fillStyle='#030003'; ctx.fillRect(0,0,W,H);
+  starfield(ctx,W,H,50,0.5);
+  var cx=W/2,cy=H/2;
+  [{r:68,w:18,c:'rgba(255,100,0,0.2)'},{r:56,w:13,c:'rgba(255,140,0,0.35)'},
+   {r:45,w:10,c:'rgba(255,175,20,0.5)'},{r:36,w:6,c:'rgba(255,210,50,0.58)'}
+  ].forEach(function(rg){
+    var gr=ctx.createRadialGradient(cx,cy,rg.r-rg.w/2,cx,cy,rg.r+rg.w/2);
+    gr.addColorStop(0,'transparent'); gr.addColorStop(0.4,rg.c); gr.addColorStop(1,'transparent');
+    ctx.beginPath(); ctx.arc(cx,cy,rg.r,0,Math.PI*2); ctx.strokeStyle=gr; ctx.lineWidth=rg.w; ctx.stroke();
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,26,0,Math.PI*2); ctx.fillStyle='#000'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx,cy,2,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.6)'; ctx.fill();
+});
+ig('ig2',function(ctx,W,H){ // Sgr A*
+  ctx.fillStyle='#000208'; ctx.fillRect(0,0,W,H);
+  starfield(ctx,W,H,90,0.8);
+  var cx=W/2,cy=H/2;
+  [{r:60,w:16,c:'rgba(170,130,255,0.18)'},{r:49,w:11,c:'rgba(190,150,255,0.3)'},
+   {r:39,w:8,c:'rgba(210,170,255,0.44)'},{r:31,w:5,c:'rgba(230,190,255,0.54)'}
+  ].forEach(function(rg){
+    var gr=ctx.createRadialGradient(cx,cy,rg.r-rg.w/2,cx,cy,rg.r+rg.w/2);
+    gr.addColorStop(0,'transparent'); gr.addColorStop(0.4,rg.c); gr.addColorStop(1,'transparent');
+    ctx.beginPath(); ctx.arc(cx,cy,rg.r,0,Math.PI*2); ctx.strokeStyle=gr; ctx.lineWidth=rg.w; ctx.stroke();
+  });
+  var gl=ctx.createRadialGradient(cx,cy,0,cx,cy,52); gl.addColorStop(0,'rgba(255,170,60,0.1)'); gl.addColorStop(1,'transparent');
+  ctx.beginPath(); ctx.arc(cx,cy,52,0,Math.PI*2); ctx.fillStyle=gl; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx,cy,22,0,Math.PI*2); ctx.fillStyle='#000'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx,cy,2,0,Math.PI*2); ctx.fillStyle='rgba(255,255,255,0.5)'; ctx.fill();
+});
+ig('ig3',function(ctx,W,H){ // lensing
+  ctx.fillStyle='#00000a'; ctx.fillRect(0,0,W,H);
+  starfield(ctx,W,H,130,0.9);
+  var cx=W/2,cy=H/2;
+  [70,60,51,43,37].forEach(function(r,i){
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.strokeStyle='rgba(170,195,255,'+(0.12+i*0.1)+')'; ctx.lineWidth=2+i*0.3; ctx.stroke();
+  });
+  ctx.beginPath(); ctx.arc(cx+3,cy-3,55,0.25,Math.PI*1.65);
+  ctx.strokeStyle='rgba(210,235,255,0.7)'; ctx.lineWidth=3; ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx,cy,18,0,Math.PI*2); ctx.fillStyle='#000'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx,cy,18,0,Math.PI*2); ctx.strokeStyle='rgba(170,195,255,0.4)'; ctx.lineWidth=1; ctx.stroke();
+});
+ig('ig4',function(ctx,W,H){ // Interstellar
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+  starfield(ctx,W,H,45,0.6);
+  var cx=W/2,cy=H/2;
+  var tg=ctx.createLinearGradient(cx-82,cy-16,cx+82,cy-16);
+  tg.addColorStop(0,'rgba(255,195,90,0)'); tg.addColorStop(0.3,'rgba(255,225,140,0.72)'); tg.addColorStop(0.7,'rgba(255,195,75,0.8)'); tg.addColorStop(1,'rgba(255,175,50,0)');
+  ctx.beginPath(); ctx.ellipse(cx,cy-13,80,13,0,Math.PI,Math.PI*2); ctx.strokeStyle=tg; ctx.lineWidth=10; ctx.stroke();
+  var bg=ctx.createLinearGradient(cx-55,cy+8,cx+55,cy+8);
+  bg.addColorStop(0,'rgba(255,155,25,0)'); bg.addColorStop(0.5,'rgba(255,185,55,0.88)'); bg.addColorStop(1,'rgba(255,155,25,0)');
+  ctx.beginPath(); ctx.ellipse(cx,cy+5,54,9,0,0,Math.PI); ctx.strokeStyle=bg; ctx.lineWidth=8; ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx,cy,28,0,Math.PI*2); ctx.fillStyle='#000'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx,cy,28,0,Math.PI*2); ctx.strokeStyle='rgba(255,175,55,0.4)'; ctx.lineWidth=1; ctx.stroke();
+});
+
+// ── VIDEO THUMB CANVASES ──
+[
+  ['vt1',[[255,80,0],[255,150,0],[255,200,50]]],
+  ['vt2',[[0,100,255],[50,155,255],[150,200,255]]],
+  ['vt3',[[255,55,0],[255,110,0],[255,165,30]]],
+  ['vt4',[[120,0,220],[160,50,255],[200,155,255]]],
+  ['vt5',[[255,140,0],[255,190,30],[255,230,80]]]
+].forEach(function(pair){
+  var c=document.getElementById(pair[0]); if(!c) return;
+  var ctx=c.getContext('2d'),W=64,H=40,cx=32,cy=20;
+  ctx.fillStyle='#000'; ctx.fillRect(0,0,W,H);
+  starfield(ctx,W,H,20,0.5);
+  pair[1].forEach(function(col,i){
+    var rr=16-i*3,ww=5-i;
+    var gr=ctx.createRadialGradient(cx,cy,rr-ww/2,cx,cy,rr+ww/2);
+    gr.addColorStop(0,'transparent');
+    gr.addColorStop(0.4,'rgba('+col[0]+','+col[1]+','+col[2]+',0.5)');
+    gr.addColorStop(1,'transparent');
+    ctx.beginPath(); ctx.arc(cx,cy,rr,0,Math.PI*2); ctx.strokeStyle=gr; ctx.lineWidth=ww; ctx.stroke();
+  });
+  ctx.beginPath(); ctx.arc(cx,cy,7,0,Math.PI*2); ctx.fillStyle='#000'; ctx.fill();
+});
+
+// ── SCROLL REVEALS ──
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('on'); });
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(function(el){ obs.observe(el); });
+</script>
+</body>
+</html>
